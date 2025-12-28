@@ -481,8 +481,8 @@ def main():
             print(f"\n  Generating success rate plots...")
             plotter.plot_success_rate(save=True)
 
-        print(f"  Generating smoothed seed-averaged plot...")
-        plotter.plot_smoothed_seed_averaged_comparison(algorithms_data, task, window=args.window)
+        # print(f"  Generating smoothed seed-averaged plot...")
+        # plotter.plot_smoothed_seed_averaged_comparison(algorithms_data, task, window=args.window)
 
     print("\n" + "=" * 70)
     print("Summary")

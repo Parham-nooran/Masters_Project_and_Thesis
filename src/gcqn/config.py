@@ -109,7 +109,7 @@ def _add_training_arguments(parser):
 
 def _add_action_space_arguments(parser):
     """Add action space growth arguments."""
-    parser.add_argument("--initial-bins", type=int, default=2)
+    parser.add_argument("--initial-bins", type=int, default=3)
     parser.add_argument("--final-bins", type=int, default=9)
     parser.add_argument(
         "--unmasking-strategy",
