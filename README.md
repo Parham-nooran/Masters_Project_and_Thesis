@@ -800,12 +800,6 @@ Email: parham.nooranbakht@students.uni-freiburg.de
 - **RL Algorithms Research Group** at University of Freiburg
 - All contributors to PyTorch, dm_control, and MuJoCo
 
-## 📚 Additional Resources
-
-- **Project PDF**: [Link to Project]
-- **Project Presentation**: [Link to slides]
-- **Experiment Logs**: Available in `output/` directory
-- **Trained Models**: [Link to model zoo]
 
 ---
 
