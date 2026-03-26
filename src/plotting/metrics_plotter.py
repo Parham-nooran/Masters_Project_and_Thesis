@@ -30,19 +30,27 @@ plt.rcParams["ytick.labelsize"] = 10
 plt.rcParams["legend.fontsize"] = 10
 plt.rcParams["figure.titlesize"] = 14
 
+ALGORITHM_COLORS = {
+    "HYBRID": "#000000",        # Black
+    "GQN": "#E63946",        # Red
+    "BANGBANG_MPO": "#1565C0",  # Blue
+    "BANGBANG_PPO": "#008000",  # Green
+    "DEQN": "#FFFF00",       # yellow
+    "CQN": "#6A0DAD",        #  Purple
+}
+
 COLORS = [
-    "#2E86AB",
-    "#A23B72",
-    "#F18F01",
-    "#C73E1D",
-    "#6A994E",
-    "#BC4B51",
-    "#8B5A3C",
+    "#000000",  # Black - HQN (standout)
+    "#E63946",  # Red
+    "#008000",  # Green
+    "#1565C0",  # Blue
+    "#FFFF00",  # yellow
+    "#FFA500",  # orange
+    "#6A0DAD",  # Purple
     "#4A5859",
     "#5E548E",
     "#E07A5F",
 ]
-
 
 class MetricsLoader:
     """Load and parse metrics files."""
@@ -199,7 +207,7 @@ class RewardPlotter:
         sorted_algorithms = sorted(algorithms_data.keys())
 
         for idx, algorithm in enumerate(sorted_algorithms):
-            color = COLORS[idx % len(COLORS)]
+            color = ALGORITHM_COLORS.get(algorithm, COLORS[idx % len(COLORS)])
             seeds_data = algorithms_data[algorithm]
 
             if len(seeds_data) == 0:
@@ -260,7 +268,7 @@ class RewardPlotter:
         sorted_algorithms = sorted(algorithms_data.keys())
 
         for idx, algorithm in enumerate(sorted_algorithms):
-            color = COLORS[idx % len(COLORS)]
+            color = ALGORITHM_COLORS.get(algorithm, COLORS[idx % len(COLORS)])
             seeds_data = algorithms_data[algorithm]
 
             if len(seeds_data) == 0:
@@ -474,15 +482,15 @@ def main():
         for algo, seeds in algorithms_data.items():
             print(f"  {algo}: {len(seeds)} seed(s)")
 
-        print(f"\n  Generating seed-averaged plot...")
-        plotter.plot_seed_averaged_comparison(algorithms_data, task)
+        # print(f"\n  Generating seed-averaged plot...")
+        # plotter.plot_seed_averaged_comparison(algorithms_data, task)
 
         if hasattr(metrics, "env_type") and metrics.get("env_type") == "metaworld":
             print(f"\n  Generating success rate plots...")
             plotter.plot_success_rate(save=True)
 
-        # print(f"  Generating smoothed seed-averaged plot...")
-        # plotter.plot_smoothed_seed_averaged_comparison(algorithms_data, task, window=args.window)
+        print(f"  Generating smoothed seed-averaged plot...")
+        plotter.plot_smoothed_seed_averaged_comparison(algorithms_data, task, window=args.window)
 
     print("\n" + "=" * 70)
     print("Summary")
