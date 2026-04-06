@@ -244,7 +244,7 @@ class RewardPlotter:
 
         plt.tight_layout()
 
-        filename = f"{task}_seed_averaged.pdf"
+        filename = f"{task}.pdf"
         filepath = self.output_dir / filename
         plt.savefig(filepath, format="pdf", bbox_inches="tight", dpi=300)
         plt.close()
@@ -330,7 +330,7 @@ class RewardPlotter:
 
         plt.tight_layout()
 
-        filename = f"{task}_smoothed_seed_averaged.pdf"
+        filename = f"{task}.pdf"
         filepath = self.output_dir / filename
         plt.savefig(filepath, format="pdf", bbox_inches="tight", dpi=300)
         plt.close()
