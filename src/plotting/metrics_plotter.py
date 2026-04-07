@@ -191,6 +191,15 @@ class RewardPlotter:
         sns.set_style("whitegrid")
         self.averager = SeedAverager()
 
+    def _save_figure(self, task: str) -> None:
+        """Save the current figure as both PDF and PNG."""
+        pdf_path = self.output_dir / f"{task}.pdf"
+        png_path = self.output_dir / f"{task}.png"
+        plt.savefig(pdf_path, format="pdf", bbox_inches="tight", dpi=300)
+        plt.savefig(png_path, format="png", bbox_inches="tight", dpi=150)
+        plt.close()
+        print(f"  Saved: {task}.pdf + {task}.png")
+
     def plot_seed_averaged_comparison(
         self, algorithms_data: Dict[str, List[Dict]], task: str
     ):
@@ -243,13 +252,7 @@ class RewardPlotter:
         ax.set_facecolor("#FAFAFA")
 
         plt.tight_layout()
-
-        filename = f"{task}.pdf"
-        filepath = self.output_dir / filename
-        plt.savefig(filepath, format="pdf", bbox_inches="tight", dpi=300)
-        plt.close()
-
-        print(f"  Saved: {filename}")
+        self._save_figure(task)
 
     def plot_smoothed_seed_averaged_comparison(
         self, algorithms_data: Dict[str, List[Dict]], task: str, window: int = 50
@@ -329,13 +332,7 @@ class RewardPlotter:
         ax.set_facecolor("#FAFAFA")
 
         plt.tight_layout()
-
-        filename = f"{task}.pdf"
-        filepath = self.output_dir / filename
-        plt.savefig(filepath, format="pdf", bbox_inches="tight", dpi=300)
-        plt.close()
-
-        print(f"  Saved: {filename}")
+        self._save_figure(task)
 
     @staticmethod
     def _compute_moving_average(data: np.ndarray, window: int) -> np.ndarray:
