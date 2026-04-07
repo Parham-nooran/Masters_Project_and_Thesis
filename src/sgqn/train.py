@@ -15,7 +15,7 @@ from src.common.training_utils import (
     init_training,
 )
 from src.plotting.plotting_utils import PlottingUtils
-from src.sgqn.agent import GCQNAgent
+from src.sgqn.agent import SGQNAgent
 from src.sgqn.config import parse_args, create_config_from_args
 
 
@@ -60,7 +60,7 @@ def update_metrics_accumulator(metrics, metrics_accumulator):
 
 
 class SGQNTrainer(Logger):
-    """Trainer for GCQN Agent with Q-value guided growth."""
+    """Trainer for SGQN Agent with Q-value guided growth."""
 
     def __init__(self, config, working_dir="./output/sgqn"):
         super().__init__(working_dir + "/logs")
@@ -83,7 +83,7 @@ class SGQNTrainer(Logger):
             env, self.config.use_pixels, self.config.env_type
         )
 
-        agent = GCQNAgent(self.config, obs_shape, action_spec_dict)
+        agent = SGQNAgent(self.config, obs_shape, action_spec_dict)
 
         start_episode = self.checkpoint_manager.load_checkpoint_if_available(
             self.config.load_checkpoints, agent
@@ -106,7 +106,7 @@ class SGQNTrainer(Logger):
     def _log_setup_info(self, agent):
         """Log training setup information."""
         self._print_separator()
-        self.logger.info("GCQN Agent Setup:")
+        self.logger.info("SGQN Agent Setup:")
         self._print_separator()
 
         self._log_environment_info()
@@ -341,7 +341,7 @@ class SGQNTrainer(Logger):
             f"MSE: {metrics['mse_loss']:8.6f} | "
             f"TD: {metrics['mean_abs_td_error']:8.6f} | "
             f"Q: {metrics['q_mean']:6.3f} | "
-            f"ε: {metrics['epsilon']:.4f} | "
+            f"\u03b5: {metrics['epsilon']:.4f} | "
             f"Phase: {phase_names.get(metrics.get('current_phase', 1), 'N/A')} | "
             f"T: {metrics.get('temperature', 0):.2f} | "
             f"Bins: {metrics.get('current_bins', 'N/A')} | "

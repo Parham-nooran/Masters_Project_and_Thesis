@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 @dataclass
 class SGQNConfig:
-    """Configuration for Hybrid CQN-GQN with all hyperparameters."""
+    """Configuration for Selective Growing Q-Networks (SGQN)."""
 
     env_type: str = "dmcontrol"
     task: str = "walker_walk"
@@ -24,9 +24,8 @@ class SGQNConfig:
 
     initial_bins: int = 2
     final_bins: int = 9
-    unmasking_strategy: str = "hybrid"
-    growth_check_interval: int = 50
-    min_episodes_before_growth: int = 100
+    confidence_threshold: int = 50
+    temperature_decay: float = 0.995
 
     epsilon: float = 0.1
     epsilon_decay: float = 0.995
@@ -66,8 +65,8 @@ def create_config_from_args(args):
 
 
 def parse_args():
-    """Parse command line arguments for hybrid training."""
-    parser = argparse.ArgumentParser(description="Train Hybrid CQN-GQN")
+    """Parse command line arguments for SGQN training."""
+    parser = argparse.ArgumentParser(description="Train Selective Growing Q-Networks (SGQN)")
 
     _add_environment_arguments(parser)
     _add_training_arguments(parser)
@@ -109,16 +108,20 @@ def _add_training_arguments(parser):
 
 def _add_action_space_arguments(parser):
     """Add action space growth arguments."""
-    parser.add_argument("--initial-bins", type=int, default=3)
+    parser.add_argument("--initial-bins", type=int, default=2)
     parser.add_argument("--final-bins", type=int, default=9)
     parser.add_argument(
-        "--unmasking-strategy",
-        type=str,
-        default="hybrid",
-        choices=["variance", "advantage", "hybrid"],
+        "--confidence-threshold",
+        type=int,
+        default=50,
+        help="Episodes before enabling weighted selection",
     )
-    parser.add_argument("--growth-check-interval", type=int, default=50)
-    parser.add_argument("--min-episodes-before-growth", type=int, default=100)
+    parser.add_argument(
+        "--temperature-decay",
+        type=float,
+        default=0.995,
+        help="Temperature decay rate for softmax selection",
+    )
 
 
 def _add_exploration_arguments(parser):

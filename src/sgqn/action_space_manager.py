@@ -379,15 +379,15 @@ class SGQNActionSpaceManager:
                     q_mean = active_q.mean().item()
 
                     if q_val > q_mean + active_q.std().item():
-                        ascii_repr.append("█")
+                        ascii_repr.append("\u2588")
                     elif q_val > q_mean:
-                        ascii_repr.append("▓")
+                        ascii_repr.append("\u2593")
                     else:
-                        ascii_repr.append("▒")
+                        ascii_repr.append("\u2592")
                 else:
-                    ascii_repr.append("█")
+                    ascii_repr.append("\u2588")
             else:
-                ascii_repr.append("░")
+                ascii_repr.append("\u2591")
 
         active_bins_values = self.action_bins[dim, active_indices].cpu().numpy()
 
@@ -409,7 +409,7 @@ class SGQNActionSpaceManager:
     def log_detailed_state(self, logger, episode):
         """Log comprehensive state information."""
         logger.info("=" * 80)
-        logger.info(f"GCQN ACTION SPACE STATE at Episode {episode}")
+        logger.info(f"SGQN ACTION SPACE STATE at Episode {episode}")
         logger.info("=" * 80)
 
         phase_names = {
@@ -429,7 +429,7 @@ class SGQNActionSpaceManager:
         logger.info("")
 
         logger.info("Active Bins per Dimension:")
-        logger.info("Legend: █ = High Q  ▓ = Medium Q  ▒ = Low Q  ░ = Inactive")
+        logger.info("Legend: \u2588 = High Q  \u2593 = Medium Q  \u2592 = Low Q  \u2591 = Inactive")
         self.get_visual_representation(logger)
         logger.info("=" * 80)
 

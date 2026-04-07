@@ -9,9 +9,9 @@ from src.common.encoder import VisionEncoder
 from src.gqn.network import DualDecoupledQNetwork
 
 
-class GCQNAgent:
+class SGQNAgent:
     """
-    Q-value Guided Growth with Lazy Pruning agent.
+    Selective Growing Q-Networks (SGQN) agent.
 
     Features:
     - Weighted action selection based on Q-values
