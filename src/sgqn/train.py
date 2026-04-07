@@ -27,7 +27,9 @@ def convert_action_to_numpy(action):
     return action
 
 
-def create_episode_metrics_dict(episode_reward, steps, episode_time, averages, agent, success=0.0):
+def create_episode_metrics_dict(
+    episode_reward, steps, episode_time, averages, agent, success=0.0
+):
     """Create dictionary of episode metrics."""
     growth_info = agent.action_space_manager.get_growth_info()
 
@@ -212,7 +214,7 @@ class SGQNTrainer(Logger):
         """Log action space adaptation event."""
         growth_info = agent.action_space_manager.get_growth_info()
 
-        if change_type == 'weighted_selection_enabled':
+        if change_type == "weighted_selection_enabled":
             self.logger.info("")
             self.logger.info("=" * 80)
             self.logger.info(f">>> WEIGHTED SELECTION ENABLED at episode {episode}")
@@ -221,25 +223,33 @@ class SGQNTrainer(Logger):
             self.logger.info("=" * 80)
             self.logger.info("")
 
-        elif change_type == 'growth':
+        elif change_type == "growth":
             self.logger.info("")
             self.logger.info("=" * 80)
             self.logger.info(f">>> ACTION SPACE GREW at episode {episode}")
             self.logger.info(
-                f"    Active bins: {growth_info['total_active_bins']}/{growth_info['total_possible_bins']}")
-            self.logger.info(f"    Per dimension: {growth_info['active_per_dimension']}")
+                f"    Active bins: {growth_info['total_active_bins']}/{growth_info['total_possible_bins']}"
+            )
+            self.logger.info(
+                f"    Per dimension: {growth_info['active_per_dimension']}"
+            )
             self.logger.info(f"    Total growth events: {growth_info['growth_events']}")
             self.logger.info("=" * 80)
             self.logger.info("")
 
-        elif change_type == 'pruning':
+        elif change_type == "pruning":
             self.logger.info("")
             self.logger.info("=" * 80)
             self.logger.info(f">>> ACTION SPACE PRUNED at episode {episode}")
             self.logger.info(
-                f"    Active bins: {growth_info['total_active_bins']}/{growth_info['total_possible_bins']}")
-            self.logger.info(f"    Per dimension: {growth_info['active_per_dimension']}")
-            self.logger.info(f"    Total pruning events: {growth_info['pruning_events']}")
+                f"    Active bins: {growth_info['total_active_bins']}/{growth_info['total_possible_bins']}"
+            )
+            self.logger.info(
+                f"    Per dimension: {growth_info['active_per_dimension']}"
+            )
+            self.logger.info(
+                f"    Total pruning events: {growth_info['pruning_events']}"
+            )
             self.logger.info("=" * 80)
             self.logger.info("")
 

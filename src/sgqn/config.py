@@ -66,7 +66,9 @@ def create_config_from_args(args):
 
 def parse_args():
     """Parse command line arguments for SGQN training."""
-    parser = argparse.ArgumentParser(description="Train Selective Growing Q-Networks (SGQN)")
+    parser = argparse.ArgumentParser(
+        description="Train Selective Growing Q-Networks (SGQN)"
+    )
 
     _add_environment_arguments(parser)
     _add_training_arguments(parser)

@@ -18,8 +18,7 @@ class BangBangTrainer(Logger):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.agent_name = f"bangbang_{self.args.algorithm}"
         self.checkpoint_manager = CheckpointManager(
-            self.logger,
-            checkpoint_dir=self.working_dir + "/checkpoints"
+            self.logger, checkpoint_dir=self.working_dir + "/checkpoints"
         )
 
     def train(self):
@@ -28,10 +27,11 @@ class BangBangTrainer(Logger):
         obs_shape, action_spec_dict = get_env_specs(env, self.args.use_pixels)
         agent = BangBangAgent(self.args, obs_shape, action_spec_dict)
         start_episode = self.checkpoint_manager.load_checkpoint_if_available(
-            self.args.resume_checkpoint,
-            agent
+            self.args.resume_checkpoint, agent
         )
-        metrics_tracker = MetricsTracker(self.logger, save_dir=self.working_dir + "/metrics")
+        metrics_tracker = MetricsTracker(
+            self.logger, save_dir=self.working_dir + "/metrics"
+        )
 
         self._log_training_start(agent)
 
@@ -143,11 +143,17 @@ class BangBangTrainer(Logger):
 
     def _save_checkpoint_if_needed(self, episode, agent, metrics_tracker):
         if episode % self.args.checkpoint_interval == 0:
-            self.checkpoint_manager.save_checkpoint(agent, episode, self.args.task, self.args.seed)
-            metrics_tracker.save_metrics(self.agent_name, self.args.task, self.args.seed)
+            self.checkpoint_manager.save_checkpoint(
+                agent, episode, self.args.task, self.args.seed
+            )
+            metrics_tracker.save_metrics(
+                self.agent_name, self.args.task, self.args.seed
+            )
 
     def _finalize_training(self, agent, metrics_tracker, start_time):
-        self.checkpoint_manager.save_checkpoint(agent, self.args.num_episodes, self.args.task, self.args.seed)
+        self.checkpoint_manager.save_checkpoint(
+            agent, self.args.num_episodes, self.args.task, self.args.seed
+        )
         metrics_tracker.save_metrics(self.agent_name, self.args.task, self.args.seed)
         total_time = time.time() - start_time
         self.logger.info(f"Training completed in {total_time / 60:.1f} minutes!")
@@ -255,7 +261,7 @@ if __name__ == "__main__":
         "--resume-checkpoint",
         type=str,
         default=None,
-        help="Path to checkpoint to resume from"
+        help="Path to checkpoint to resume from",
     )
     args = parser.parse_args()
 

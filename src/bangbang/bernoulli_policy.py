@@ -25,9 +25,7 @@ def _convert_to_bang_bang(actions: torch.Tensor) -> torch.Tensor:
     return 2.0 * actions - 1.0
 
 
-def _compute_log_probs(
-        probs: torch.Tensor, actions: torch.Tensor
-) -> torch.Tensor:
+def _compute_log_probs(probs: torch.Tensor, actions: torch.Tensor) -> torch.Tensor:
     dist = torch.distributions.Bernoulli(probs)
     return dist.log_prob(actions).sum(dim=-1)
 

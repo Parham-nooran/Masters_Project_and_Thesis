@@ -31,12 +31,12 @@ plt.rcParams["legend.fontsize"] = 10
 plt.rcParams["figure.titlesize"] = 14
 
 ALGORITHM_COLORS = {
-    "HYBRID": "#000000",        # Black
-    "GQN": "#E63946",        # Red
+    "HYBRID": "#000000",  # Black
+    "GQN": "#E63946",  # Red
     "BANGBANG_MPO": "#1565C0",  # Blue
     "BANGBANG_PPO": "#008000",  # Green
-    "DEQN": "#FFFF00",       # yellow
-    "CQN": "#6A0DAD",        #  Purple
+    "DEQN": "#FFFF00",  # yellow
+    "CQN": "#6A0DAD",  #  Purple
 }
 
 COLORS = [
@@ -51,6 +51,7 @@ COLORS = [
     "#5E548E",
     "#E07A5F",
 ]
+
 
 class MetricsLoader:
     """Load and parse metrics files."""
@@ -487,7 +488,9 @@ def main():
             plotter.plot_success_rate(save=True)
 
         print(f"  Generating smoothed seed-averaged plot...")
-        plotter.plot_smoothed_seed_averaged_comparison(algorithms_data, task, window=args.window)
+        plotter.plot_smoothed_seed_averaged_comparison(
+            algorithms_data, task, window=args.window
+        )
 
     print("\n" + "=" * 70)
     print("Summary")

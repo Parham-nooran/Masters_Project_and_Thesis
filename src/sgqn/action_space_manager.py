@@ -13,8 +13,15 @@ class SGQNActionSpaceManager:
     3. Lazy pruning: Remove persistently low-value bins
     """
 
-    def __init__(self, action_spec, initial_bins, final_bins, device,
-                 confidence_threshold=50, temperature_decay=0.995):
+    def __init__(
+        self,
+        action_spec,
+        initial_bins,
+        final_bins,
+        device,
+        confidence_threshold=50,
+        temperature_decay=0.995,
+    ):
         self.device = device
         self.action_min = torch.tensor(
             action_spec["low"], dtype=torch.float32, device=device
@@ -96,8 +103,7 @@ class SGQNActionSpaceManager:
     def _get_active_indices_per_dimension(self):
         """Get list of active bin indices for each dimension."""
         return [
-            torch.where(self.active_masks[dim])[0]
-            for dim in range(self.action_dim)
+            torch.where(self.active_masks[dim])[0] for dim in range(self.action_dim)
         ]
 
     def _map_to_actual_indices(self, discrete_actions, active_indices_per_dim):
@@ -136,7 +142,9 @@ class SGQNActionSpaceManager:
             active_q_list.append(dim_active_q)
 
         max_active = max(aq.shape[1] for aq in active_q_list)
-        padded_active_q = self._pad_active_q_values(active_q_list, batch_size, max_active)
+        padded_active_q = self._pad_active_q_values(
+            active_q_list, batch_size, max_active
+        )
 
         return padded_active_q
 
@@ -195,8 +203,7 @@ class SGQNActionSpaceManager:
     def decay_temperature(self):
         """Decay temperature for gradual shift from exploration to exploitation."""
         self.temperature = max(
-            self.min_temperature,
-            self.temperature * self.temperature_decay
+            self.min_temperature, self.temperature * self.temperature_decay
         )
 
     def check_and_adapt(self, episode):
@@ -206,7 +213,7 @@ class SGQNActionSpaceManager:
         Returns: (did_change, change_type)
         """
         if episode < self.confidence_threshold:
-            return False, 'too_early'
+            return False, "too_early"
 
         did_grow = False
         did_prune = False
@@ -223,11 +230,11 @@ class SGQNActionSpaceManager:
                 self.current_phase = 3
 
         if did_grow:
-            return True, 'growth'
+            return True, "growth"
         elif did_prune:
-            return True, 'pruning'
+            return True, "pruning"
 
-        return False, 'none'
+        return False, "none"
 
     def _perform_growth(self, episode):
         """Grow bins near high-Q regions."""
@@ -257,10 +264,7 @@ class SGQNActionSpaceManager:
                         bins_grown += 1
 
         if bins_grown > 0:
-            self.growth_history.append({
-                'episode': episode,
-                'bins_grown': bins_grown
-            })
+            self.growth_history.append({"episode": episode, "bins_grown": bins_grown})
 
         return bins_grown
 
@@ -297,17 +301,18 @@ class SGQNActionSpaceManager:
             visit_threshold = 5
 
             for i, bin_idx in enumerate(active_bins):
-                if (active_q[i] < q_threshold and
-                        active_visits[i] < visit_threshold and
-                        self._can_safely_prune(dim, bin_idx.item())):
+                if (
+                    active_q[i] < q_threshold
+                    and active_visits[i] < visit_threshold
+                    and self._can_safely_prune(dim, bin_idx.item())
+                ):
                     self.active_masks[dim, bin_idx] = False
                     bins_pruned += 1
 
         if bins_pruned > 0:
-            self.pruning_history.append({
-                'episode': episode,
-                'bins_pruned': bins_pruned
-            })
+            self.pruning_history.append(
+                {"episode": episode, "bins_pruned": bins_pruned}
+            )
 
         return bins_pruned
 
@@ -325,8 +330,9 @@ class SGQNActionSpaceManager:
         right_neighbor = bin_idx + 1
 
         has_active_neighbor = (
-                (left_neighbor >= 0 and self.active_masks[dim, left_neighbor]) or
-                (right_neighbor < self.final_bins and self.active_masks[dim, right_neighbor])
+            left_neighbor >= 0 and self.active_masks[dim, left_neighbor]
+        ) or (
+            right_neighbor < self.final_bins and self.active_masks[dim, right_neighbor]
         )
 
         return has_active_neighbor
@@ -340,18 +346,21 @@ class SGQNActionSpaceManager:
             "total_active_bins": self.active_masks.sum().item(),
             "total_possible_bins": self.action_dim * self.final_bins,
             "active_per_dimension": [
-                self.active_masks[d].sum().item()
-                for d in range(self.action_dim)
+                self.active_masks[d].sum().item() for d in range(self.action_dim)
             ],
             "growth_events": len(self.growth_history),
-            "pruning_events": len(self.pruning_history)
+            "pruning_events": len(self.pruning_history),
         }
 
     def get_visual_representation(self, logger=None):
         """Generate visual representation of active bins per dimension."""
         visualization = []
 
-        mean_q = self.metrics_tracker.get_mean_q_values() if self.metrics_tracker.has_sufficient_data() else None
+        mean_q = (
+            self.metrics_tracker.get_mean_q_values()
+            if self.metrics_tracker.has_sufficient_data()
+            else None
+        )
 
         for dim in range(self.action_dim):
             active_indices = torch.where(self.active_masks[dim])[0].cpu().numpy()
@@ -360,8 +369,10 @@ class SGQNActionSpaceManager:
 
             if logger:
                 logger.info(f"  Dim {dim}: {dim_viz['ascii']}")
-                logger.info(f"         Active: {dim_viz['active_bins']}/{self.final_bins} "
-                            f"| Range: [{dim_viz['min_val']:.2f}, {dim_viz['max_val']:.2f}]")
+                logger.info(
+                    f"         Active: {dim_viz['active_bins']}/{self.final_bins} "
+                    f"| Range: [{dim_viz['min_val']:.2f}, {dim_viz['max_val']:.2f}]"
+                )
                 if mean_q is not None:
                     logger.info(f"         Avg Q: {dim_viz['avg_q']:.2f}")
 
@@ -403,7 +414,7 @@ class SGQNActionSpaceManager:
             "min_val": active_bins_values.min() if len(active_bins_values) > 0 else 0,
             "max_val": active_bins_values.max() if len(active_bins_values) > 0 else 0,
             "active_indices": active_indices.tolist(),
-            "avg_q": avg_q
+            "avg_q": avg_q,
         }
 
     def log_detailed_state(self, logger, episode):
@@ -415,21 +426,25 @@ class SGQNActionSpaceManager:
         phase_names = {
             1: "Uniform Exploration",
             2: "Weighted Selection",
-            3: "Weighted + Pruning"
+            3: "Weighted + Pruning",
         }
         logger.info(f"Phase {self.current_phase}: {phase_names[self.current_phase]}")
         logger.info(f"Temperature: {self.temperature:.3f}")
         logger.info("")
 
         growth_info = self.get_growth_info()
-        logger.info(f"Active bins: {growth_info['total_active_bins']}/{growth_info['total_possible_bins']} "
-                    f"({100 * growth_info['total_active_bins'] / growth_info['total_possible_bins']:.1f}%)")
+        logger.info(
+            f"Active bins: {growth_info['total_active_bins']}/{growth_info['total_possible_bins']} "
+            f"({100 * growth_info['total_active_bins'] / growth_info['total_possible_bins']:.1f}%)"
+        )
         logger.info(f"Growth events: {growth_info['growth_events']}")
         logger.info(f"Pruning events: {growth_info['pruning_events']}")
         logger.info("")
 
         logger.info("Active Bins per Dimension:")
-        logger.info("Legend: \u2588 = High Q  \u2593 = Medium Q  \u2592 = Low Q  \u2591 = Inactive")
+        logger.info(
+            "Legend: \u2588 = High Q  \u2593 = Medium Q  \u2592 = Low Q  \u2591 = Inactive"
+        )
         self.get_visual_representation(logger)
         logger.info("=" * 80)
 
@@ -513,8 +528,8 @@ class QValueGuidedTracker:
             for bin_idx in range(self.num_bins):
                 if self.visit_counts[dim, bin_idx] > 0:
                     mean_q[dim, bin_idx] = (
-                            self.cumulative_q[dim, bin_idx] /
-                            self.visit_counts[dim, bin_idx]
+                        self.cumulative_q[dim, bin_idx]
+                        / self.visit_counts[dim, bin_idx]
                     )
 
         return mean_q

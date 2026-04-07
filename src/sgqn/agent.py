@@ -65,7 +65,7 @@ class SGQNAgent:
             config.final_bins,
             self.device,
             confidence_threshold=config.confidence_threshold,
-            temperature_decay=config.temperature_decay
+            temperature_decay=config.temperature_decay,
         )
 
     def _create_networks(self, config):
@@ -154,9 +154,13 @@ class SGQNAgent:
         """
         batch_size, action_dim = q_values.shape[0], self.action_space_manager.action_dim
 
-        action_probs = self.action_space_manager.get_weighted_action_probabilities(q_values)
+        action_probs = self.action_space_manager.get_weighted_action_probabilities(
+            q_values
+        )
 
-        discrete_actions = torch.zeros(batch_size, action_dim, dtype=torch.long, device=self.device)
+        discrete_actions = torch.zeros(
+            batch_size, action_dim, dtype=torch.long, device=self.device
+        )
 
         for dim in range(action_dim):
             if torch.rand(1).item() < epsilon:
@@ -196,7 +200,7 @@ class SGQNAgent:
     def _apply_action_penalty(self, reward, action):
         """Apply action magnitude penalty to reward."""
         action_np = action.cpu().numpy() if isinstance(action, torch.Tensor) else action
-        action_norm_sq = np.sum(action_np ** 2)
+        action_norm_sq = np.sum(action_np**2)
         penalty = self.config.action_penalty_coeff * action_norm_sq / len(action_np)
         penalty = min(penalty, abs(reward) * 0.1)
         return reward - penalty
@@ -324,14 +328,16 @@ class SGQNAgent:
             abs_error, torch.tensor(self.config.huber_delta, device=self.device)
         )
         linear = abs_error - quadratic
-        return 0.5 * quadratic ** 2 + self.config.huber_delta * linear
+        return 0.5 * quadratic**2 + self.config.huber_delta * linear
 
     def _update_priorities(self, indices, td_error1, td_error2):
         """Update replay buffer priorities."""
         priorities = (torch.abs(td_error1) + torch.abs(td_error2)) / 2.0
         self.replay_buffer.update_priorities(indices, priorities.detach().cpu().numpy())
 
-    def _create_metrics_dict(self, total_loss, q1_values, q2_values, td_error1, td_error2):
+    def _create_metrics_dict(
+        self, total_loss, q1_values, q2_values, td_error1, td_error2
+    ):
         """Create dictionary of training metrics."""
         loss1 = self._huber_loss(td_error1)
         loss2 = self._huber_loss(td_error2)
@@ -341,7 +347,7 @@ class SGQNAgent:
             "q1_mean": float(q1_values.mean().item()),
             "q2_mean": float(q2_values.mean().item()),
             "mean_abs_td_error": float(torch.abs(td_error1).mean().item()),
-            "mean_squared_td_error": float((td_error1 ** 2).mean().item()),
+            "mean_squared_td_error": float((td_error1**2).mean().item()),
             "mse_loss1": float(loss1.mean().item()),
             "mse_loss2": float(loss2.mean().item()),
         }
@@ -381,17 +387,19 @@ class SGQNAgent:
 
     def check_and_adapt(self, episode):
         """Check conditions and adapt action space."""
-        switched = self.action_space_manager.check_and_switch_to_weighted_selection(episode)
+        switched = self.action_space_manager.check_and_switch_to_weighted_selection(
+            episode
+        )
 
         if switched:
-            return True, 'weighted_selection_enabled'
+            return True, "weighted_selection_enabled"
 
         did_change, change_type = self.action_space_manager.check_and_adapt(episode)
 
         if did_change:
             return True, change_type
 
-        return False, 'none'
+        return False, "none"
 
     def decay_temperature(self):
         """Decay temperature for weighted selection."""
@@ -400,7 +408,9 @@ class SGQNAgent:
     def update_epsilon(self, decay_rate=None, min_epsilon=None):
         """Update exploration rate with decay."""
         decay_rate = decay_rate if decay_rate is not None else self.config.epsilon_decay
-        min_epsilon = min_epsilon if min_epsilon is not None else self.config.min_epsilon
+        min_epsilon = (
+            min_epsilon if min_epsilon is not None else self.config.min_epsilon
+        )
         self.epsilon = max(min_epsilon, self.epsilon * decay_rate)
 
     def get_checkpoint_state(self):
@@ -433,7 +443,9 @@ class SGQNAgent:
         self.epsilon = checkpoint["epsilon"]
         self.action_space_manager.active_masks = checkpoint["action_space_masks"]
         self.action_space_manager.growth_history = checkpoint["growth_history"]
-        self.action_space_manager.pruning_history = checkpoint.get("pruning_history", [])
+        self.action_space_manager.pruning_history = checkpoint.get(
+            "pruning_history", []
+        )
         self.action_space_manager.temperature = checkpoint.get("temperature", 10.0)
         self.action_space_manager.weighted_selection_enabled = checkpoint.get(
             "weighted_selection_enabled", False
