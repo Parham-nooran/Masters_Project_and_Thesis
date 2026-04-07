@@ -1,12 +1,12 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import numpy as np
 
-from src.sgqn.action_space_manager import SGQNActionSpaceManager
-from src.common.replay_buffer import PrioritizedReplayBuffer
 from src.common.encoder import VisionEncoder
+from src.common.replay_buffer import PrioritizedReplayBuffer
 from src.gqn.network import DualDecoupledQNetwork
+from src.sgqn.action_space_manager import SGQNActionSpaceManager
 
 
 class SGQNAgent:

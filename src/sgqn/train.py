@@ -1,7 +1,8 @@
 import gc
-import time
-import torch
 import sys
+import time
+
+import torch
 
 sys.path.append("src")
 from src.common.checkpoint_manager import CheckpointManager
