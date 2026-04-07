@@ -15,8 +15,8 @@ from src.common.training_utils import (
     init_training,
 )
 from src.plotting.plotting_utils import PlottingUtils
-from src.gcqn.agent import GCQNAgent
-from src.gcqn.config import parse_args, create_config_from_args
+from src.sgqn.agent import GCQNAgent
+from src.sgqn.config import parse_args, create_config_from_args
 
 
 def convert_action_to_numpy(action):
@@ -59,15 +59,15 @@ def update_metrics_accumulator(metrics, metrics_accumulator):
     metrics_accumulator.update(metrics)
 
 
-class GCQNTrainer(Logger):
+class SGQNTrainer(Logger):
     """Trainer for GCQN Agent with Q-value guided growth."""
 
-    def __init__(self, config, working_dir="./output/gcqn"):
+    def __init__(self, config, working_dir="./output/sgqn"):
         super().__init__(working_dir + "/logs")
         self.working_dir = working_dir
         self.config = config
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.agent_name = "gcqn"
+        self.agent_name = "sgqn"
         self.checkpoint_manager = CheckpointManager(
             self.logger, checkpoint_dir=self.working_dir + "/checkpoints"
         )
@@ -462,5 +462,5 @@ class GCQNTrainer(Logger):
 if __name__ == "__main__":
     args = parse_args()
     config = create_config_from_args(args)
-    trainer = GCQNTrainer(config)
+    trainer = SGQNTrainer(config)
     trained_agent = trainer.train()

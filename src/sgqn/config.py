@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class GCQNConfig:
+class SGQNConfig:
     """Configuration for Hybrid CQN-GQN with all hyperparameters."""
 
     env_type: str = "dmcontrol"
@@ -54,9 +54,9 @@ class GCQNConfig:
     load_metrics: str = None
 
 
-def create_hybrid_config_from_args(args):
+def create_config_from_args(args):
     """Create config from command line arguments."""
-    config = GCQNConfig()
+    config = SGQNConfig()
 
     for key, value in vars(args).items():
         if hasattr(config, key) and value is not None:
@@ -65,7 +65,7 @@ def create_hybrid_config_from_args(args):
     return config
 
 
-def parse_hybrid_args():
+def parse_args():
     """Parse command line arguments for hybrid training."""
     parser = argparse.ArgumentParser(description="Train Hybrid CQN-GQN")
 

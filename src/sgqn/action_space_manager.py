@@ -3,7 +3,7 @@ import numpy as np
 from collections import deque
 
 
-class GCQNActionSpaceManager:
+class SGQNActionSpaceManager:
     """
     Q-value Guided Growth with Lazy Pruning action space manager.
 

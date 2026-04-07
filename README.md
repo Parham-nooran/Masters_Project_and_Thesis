@@ -318,7 +318,7 @@ agent = CQNAgent(
 **Best for**: Research on adaptive weighted selection
 
 ```python
-from src.gcqn.agent import GCQNAgent
+from src.sgqn.agent import GCQNAgent
 
 # Q-value guided growth with lazy pruning
 agent = GCQNAgent(config, obs_shape, action_spec)
